@@ -1,0 +1,9 @@
+.reminder { background:#faf8f3; border:1px solid #d9d1c5; border-radius:4px; padding:36px; gap:18px; color:#30271f; }
+.label { font-size:10px; letter-spacing:.16em; color:#967249; }
+.title { font:400 36px/1.15 var(--font-heading),serif; }
+.copy { color:#71665c; font-size:14px; line-height:1.8; }
+.actions { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+.actions button { min-height:46px; padding:12px 18px; background:#30271f; color:#faf8f3; border:1px solid #30271f; cursor:pointer; font-size:13px; }
+.actions button+button { background:transparent; color:#71665c; border-color:#d9d1c5; }
+.actions button:focus-visible { outline:2px solid #967249; outline-offset:3px; }
+@media(max-width:480px) { .reminder { padding:28px 24px; } .title { font-size:30px; } }

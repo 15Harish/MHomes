@@ -1,0 +1,175 @@
+.hero {
+  --hero-height: max(100dvh, 680px);
+  position: relative;
+  height: var(--hero-height);
+  background: #171c20;
+  overflow: hidden;
+  color: white;
+}
+
+.viewport {
+  position: relative;
+  height: var(--hero-height);
+  overflow: hidden;
+  background: #273d54;
+}
+
+.background, .foreground, .shade, .imageReveal, .skyReveal, .titleZoom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.background { z-index: 0; }
+.foreground { z-index: 40; }
+.background, .foreground, .titleZoom { transform-origin: center 26.6%; }
+.titleZoom { z-index: 10; mix-blend-mode: screen; }
+
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: max(100%, 177.873dvh, 1209px);
+  height: auto;
+  aspect-ratio: 1672 / 940;
+  transform: translateX(-50%);
+  max-width: none;
+}
+
+.titlePosition {
+  --wordmark-width: min(94vw, 1600px);
+  --wordmark-height: calc(var(--wordmark-width) * 400 / 2172);
+  position: absolute;
+  z-index: 10;
+  top: calc(max(26.6dvh, 14.95vw, 180.88px) - var(--wordmark-height) * 0.67);
+  width: 100%;
+  text-align: center;
+}
+
+.title {
+  position: relative;
+  width: var(--wordmark-width);
+  height: var(--wordmark-height);
+  margin: 0 auto;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, rgb(0 0 0 / 80%) 58%, rgb(0 0 0 / 28%) 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, rgb(0 0 0 / 80%) 58%, rgb(0 0 0 / 28%) 82%, transparent 100%);
+}
+
+.wordmark {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  left: 0;
+  top: -42.5%;
+  max-width: none;
+}
+
+.titleFallback {
+  font-family: var(--font-heading), serif;
+  font-size: calc(var(--wordmark-width) / 5);
+  color: #fff4dd;
+  line-height: 1;
+}
+
+.shade {
+  z-index: 41;
+  background: linear-gradient(180deg, transparent 55%, rgb(7 14 16 / 28%) 73%, rgb(7 14 16 / 78%) 100%);
+}
+
+.booking {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  width: min(100% - 32px, 1080px);
+  /* Framer owns translateY; use the independent translate property for centering. */
+  translate: -50% 0;
+  z-index: 45;
+  text-align: left;
+}
+
+.scrollHint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  font-family: var(--font-label);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgb(255 255 255 / 75%);
+}
+
+.scrollHint span { font-size: 20px; }
+
+@media (max-width: 640px) {
+  .hero { --hero-height: max(100dvh, 740px); }
+  .frame { width: max(100%, 177.873dvh, 1316px); }
+  .titlePosition { top: calc(max(26.6dvh, 196.84px) - var(--wordmark-height) * 0.67); }
+  .booking { bottom: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero { height: var(--hero-height); }
+  .viewport { position: relative; }
+}
+
+.navigation[data-home='true'] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.navigation[data-home='true'] > div:first-child { padding-top: 12px; padding-bottom: 12px; }
+.navigation[data-home='true'] img { height: 96px; width: 120px !important; object-fit: contain; }
+.navigation[data-home='true'] a { color: #f5eee4; }
+.navigation[data-home='true'] a > span { color: inherit; }
+.navigation[data-home='true'] a > span:last-child { background-color: transparent; }
+.navigation[data-home='true'] button {
+  color: #f5eee4;
+  border: 1px solid rgb(255 255 255 / 40%);
+  background: rgb(255 255 255 / 8%);
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+}
+.navigation[data-home='true'] > div + div { background: #30271f; }
+
+.navigation[data-home='false'] { background: #faf8f3; border-color: #ded5c8; }
+.navigation[data-home='false'] > div:first-child { padding-block: 12px; }
+.navigation[data-home='false'] img { height: 96px; width: 120px !important; object-fit: contain; }
+.navigation[data-home='false'] a > span { color: inherit; }
+
+
+.navigation[data-home='true'] a:has(img) { visibility: hidden; pointer-events: none; }
+.navigation[data-home='false'] a:has(img) { visibility: visible; }
+.storyNumber { position: absolute; bottom: 20px; left: 20px; display: flex; align-items: baseline; gap: 10px; padding: 12px 18px; background: #faf8f3; color: #30271f; font: 30px/1 var(--font-heading), serif; }
+.storyNumber span { color: #71665c; font: 9px/1 var(--font-label), sans-serif; letter-spacing: .12em; }
+
+.storyNumber { bottom:16px; left:16px; padding:8px 12px; gap:6px; font:12px/1 var(--font-label),sans-serif; }
+
+/* Keep the complete wordmark above the roof on portrait screens. */
+@media(max-width:1023px) {
+ .titlePosition { top:calc(max(26.6dvh, 14.95vw, 180.88px) - var(--wordmark-height) * 1.15); }
+ .booking > div:first-child { padding:16px 20px!important; }
+ .scrollHint { margin-top:12px; }
+}
+@media(max-width:640px) {
+ .titlePosition { --wordmark-width:94vw; top:calc(max(26.6dvh,196.84px) - var(--wordmark-height) * 1.2); }
+ .title { -webkit-mask-image:linear-gradient(#000 0%,#000 72%,transparent 100%); mask-image:linear-gradient(#000 0%,#000 72%,transparent 100%); }
+ .booking { width:calc(100% - 28px); bottom:18px; }
+ .booking > div:first-child { padding:16px!important; }
+ .navigation[data-home='false'] img { height:64px; width:90px!important; }
+}
+
+/* Portrait composition: size the landscape by width, not the phone's height. */
+@media(max-width:640px) and (orientation:portrait) {
+ .hero { --mobile-roof:34svh; }
+ .viewport { background:linear-gradient(180deg,#273d54 0%,#273d54 32%,#18232a 60%,#10191e 100%); }
+ .frame { width:145vw; top:calc(var(--mobile-roof) - 21.68vw); }
+ .background .frame { -webkit-mask-image:linear-gradient(transparent,#000 18%,#000 78%,transparent); mask-image:linear-gradient(transparent,#000 18%,#000 78%,transparent); }
+ .foreground .frame { -webkit-mask-image:linear-gradient(#000 78%,transparent); mask-image:linear-gradient(#000 78%,transparent); }
+ .background,.foreground,.titleZoom { transform-origin:center var(--mobile-roof); }
+ .titlePosition { top:calc(var(--mobile-roof) - var(--wordmark-height) * 1.2); }
+}

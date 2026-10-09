@@ -2,25 +2,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* Warm white #FAFAF8 */
-    --foreground: 0 0% 10%; /* Near black #1A1A1A */
-    --card: 0 0% 100%; /* Pure white #FFFFFF */
-    --card-foreground: 0 0% 10%; /* Near black #1A1A1A */
-    --popover: 0 0% 100%; /* Pure white #FFFFFF */
-    --popover-foreground: 0 0% 10%; /* Near black #1A1A1A */
-    --primary: 12 48% 42%; /* Rich brown #6B3F2A */
-    --primary-foreground: 0 0% 98%; /* Warm white #FAFAF8 */
-    --secondary: 36 51% 59%; /* Deep gold #C9A84C */
-    --secondary-foreground: 0 0% 10%; /* Near black #1A1A1A */
-    --muted: 12 10% 88%; /* Warm grey #E8E4DC */
-    --muted-foreground: 0 0% 42%; /* Warm grey text #6B6B6B */
-    --accent: 36 51% 59%; /* Deep gold #C9A84C */
-    --accent-foreground: 0 0% 10%; /* Near black #1A1A1A */
+    --background: 42.9 41.2% 96.7%; /* #faf8f3 */
+    --foreground: 28.2 21.5% 15.5%; /* #30271f */
+    --card: 42.9 41.2% 96.7%; /* #faf8f3 */
+    --card-foreground: 28.2 21.5% 15.5%; /* #30271f */
+    --popover: 42.9 41.2% 96.7%; /* #faf8f3 */
+    --popover-foreground: 28.2 21.5% 15.5%; /* #30271f */
+    --primary: 28.2 21.5% 15.5%; /* #30271f */
+    --primary-foreground: 35.3 45.9% 92.7%; /* #f5eee4 */
+    --secondary: 38.8 27.9% 88.0%; /* #e9e3d8 */
+    --secondary-foreground: 28.2 21.5% 15.5%; /* #30271f */
+    --muted: 38.6 31.8% 91.4%; /* #f0ebe2 */
+    --muted-foreground: 28.6 10.2% 40.2%; /* #71665c */
+    --accent: 34.7 40.4% 81.6%; /* #e3d3bd */
+    --accent-foreground: 28.2 21.5% 15.5%; /* #30271f */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 12 10% 88%; /* Warm grey borders #E8E4DC */
-    --input: 0 0% 100%; /* Pure white #FFFFFF */
-    --ring: 12 48% 42%; /* Rich brown #6B3F2A */
+    --border: 36.0 20.8% 81.2%; /* #d9d1c5 */
+    --input: 36.0 20.8% 81.2%; /* #d9d1c5 */
+    --ring: 31.9 34.5% 43.7%; /* #967249 */
     --chart-1: 36 51% 59%; /* Gold */
     --chart-2: 12 48% 42%; /* Brown */
     --chart-3: 12 48% 32%; /* Darker brown */
@@ -99,7 +99,7 @@
     font-family: var(--font-body), "DM Sans", sans-serif;
     scroll-behavior: smooth;
     margin: 0;
-    color: #4a4a4a;
+    color: #71665c;
     line-height: 1.7;
   }
 
@@ -111,7 +111,7 @@
     font-family: var(--font-heading), "Cormorant Garamond", serif;
     font-weight: 500;
     letter-spacing: -0.02em;
-    color: #1a1a1a;
+    color: #30271f;
     line-height: 1.1;
   }
 
@@ -121,7 +121,7 @@
   span {
     font-family: var(--font-body), "DM Sans", sans-serif;
     font-weight: 400;
-    color: #4a4a4a;
+    color: #71665c;
     line-height: 1.7;
   }
 
@@ -266,5 +266,15 @@
 
   .MHOMES-gold-bg {
     background-color: #c9a84c;
+  }
+}
+
+/* Calendar portals must fit small phones, including their padding. */
+@media (max-width: 380px) {
+  .rdp-root.rdp-card, .rdp-root.rdp-luxury {
+    --rdp-day-width: 36px;
+    --rdp-day-height: 38px;
+    --rdp-day_button-width: 34px;
+    --rdp-day_button-height: 36px;
   }
 }

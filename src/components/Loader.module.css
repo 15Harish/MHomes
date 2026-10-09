@@ -1,0 +1,27 @@
+.overlay { position:fixed; inset:0; z-index:2147483647; background:#fff; display:grid; place-items:center; opacity:1; transition:opacity .18s ease; touch-action:none; }
+.overlay[data-leaving='true'] { opacity:0; }
+/* Crop only the PNG's empty outer canvas. Emblem and lettering retain their source proportions. */
+.logo { position:relative; width:160px; aspect-ratio:651 / 474; overflow:visible; }
+.staticLogo,.slice { position:absolute; inset:0; }
+/* Keep the original gold with slightly softer brightness, only in the loader. */
+.logo img { position:absolute; width:235.944700%; height:auto; max-width:none; left:-66.359447%; top:-29.957806%; filter:brightness(.92); }
+.staticLogo { opacity:0; overflow:hidden; transition:opacity .1s ease; }
+.slice { animation-duration:.75s; animation-timing-function:ease-in-out; animation-iteration-count:infinite; animation-direction:alternate; transition:opacity .1s ease; }
+.slice[data-section='0'] { clip-path:inset(0 0 75% 0); animation-name:sectionOne; }
+.slice[data-section='1'] { clip-path:inset(25% 0 50% 0); animation-name:sectionTwo; }
+/* Split at the gaps below the emblem and between the two text lines,
+   keeping every letter of MHOMES and RESORT intact. */
+.slice[data-section='2'] { clip-path:inset(50% 0 40% 0); animation-name:sectionThree; }
+.slice[data-section='3'] { clip-path:inset(60% 0 11% 0); animation-name:sectionFour; }
+.slice[data-section='4'] { clip-path:inset(89% 0 0 0); animation-name:sectionFive; }
+/* A single empty row travels upward, following the supplied l24 timing. */
+@keyframes sectionOne { 0%,10%,25%,50%,75% { transform:translateY(0); } 90%,100% { transform:translateY(25%); } }
+@keyframes sectionTwo { 0%,10%,25%,50% { transform:translateY(0); } 75%,90%,100% { transform:translateY(25%); } }
+@keyframes sectionThree { 0%,10%,25% { transform:translateY(0); } 50%,75%,90%,100% { transform:translateY(25%); } }
+@keyframes sectionFour { 0%,10%,25% { transform:translateY(0); } 40%,50%,75%,90%,100% { transform:translateY(25%); } }
+@keyframes sectionFive { 0%,10% { transform:translateY(0); } 25%,50%,75%,90%,100% { transform:translateY(25%); } }
+.overlay[data-leaving='true'] .slice { animation-play-state:paused; opacity:0; }
+.overlay[data-leaving='true'] .staticLogo { opacity:1; }
+@media(max-width:640px) { .logo { width:120px; } }
+@media(prefers-reduced-motion:reduce) { .overlay { transition-duration:.1s; } .logo .slice { animation:none; opacity:0; } .staticLogo { opacity:1; } }
+:global(html):has(.overlay), :global(body):has(.overlay) { overflow:hidden; }

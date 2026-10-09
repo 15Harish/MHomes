@@ -1,5 +1,8 @@
 "use client";
 
+import { BookingReminder } from "@/components/BookingReminder";
+import { useRequestLoader } from "@/components/Loader";
+import styles from "./Reservation.module.css";
 import { Suspense, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -42,12 +45,12 @@ import {
 } from "lucide-react";
 
 // ─── Constants
-const BUTTON_BROWN = "#6B3F2A";
-const BUTTON_HOVER = "#4A2A1A";
-const BRAND_GOLD = "#C9A84C";
-const BG_LIGHT = "#FAFAF8";
-const CARD_LIGHT = "#ffffff";
-const BORDER_LIGHT = "#E8E4DC";
+const BUTTON_BROWN = "#30271f";
+const BUTTON_HOVER = "#493b2e";
+const BRAND_GOLD = "#967249";
+const BG_LIGHT = "#f0ebe2";
+const CARD_LIGHT = "#faf8f3";
+const BORDER_LIGHT = "#d9d1c5";
 
 const ROOM_AMENITIES = {
   premium: [
@@ -244,13 +247,13 @@ const validatePhone = (
 
 const rdpCardStyles = `
   .rdp-card {
-    --rdp-accent-color: #C9A84C;
+    --rdp-accent-color: #967249;
     --rdp-background-color: #FDF8EE;
     margin: 0;
     padding: 12px;
   }
   .rdp-card .rdp-day_selected {
-    background-color: #6B3F2A !important;
+    background-color: #30271f !important;
     color: white !important;
     border-radius: 4px;
   }
@@ -261,7 +264,7 @@ const rdpCardStyles = `
   }
   .rdp-card .rdp-day_range_start,
   .rdp-card .rdp-day_range_end {
-    background-color: #6B3F2A !important;
+    background-color: #30271f !important;
     color: white !important;
     border-radius: 4px !important;
   }
@@ -272,7 +275,7 @@ const rdpCardStyles = `
   .rdp-card .rdp-caption_label {
     font-family: 'Cormorant Garamond', serif;
     font-size: 15px;
-    color: #6B3F2A;
+    color: #30271f;
     font-weight: 400;
   }
   .rdp-card .rdp-nav_button:hover {
@@ -356,7 +359,7 @@ function ReservationDatePicker({
     const rect = target.getBoundingClientRect();
     const spacing = 6;
     const minEdgeGap = 8;
-    const estimatedPopoverWidth = 320;
+    const estimatedPopoverWidth = Math.min(338, window.innerWidth - 16);
     const estimatedPopoverHeight = 360;
 
     let left = rect.left;
@@ -439,10 +442,12 @@ function ReservationDatePicker({
       style={{
         position: "fixed",
         top: popoverPos.top,
+        maxHeight: "calc(100dvh - 16px)",
+        overflowY: "auto",
         left: popoverPos.left,
         zIndex: 99999,
         background: "white",
-        border: "1px solid #E8E4DC",
+        border: "1px solid #d9d1c5",
         borderRadius: "4px",
         boxShadow: "0 8px 32px rgba(107,63,42,0.12)",
       }}
@@ -563,11 +568,13 @@ function ReservationSelect({
       style={{
         position: "absolute",
         top: popoverPos.top,
+        maxHeight: "calc(100dvh - 16px)",
+        overflowY: "auto",
         left: popoverPos.left,
         width: popoverPos.width,
         zIndex: 99999,
         background: "white",
-        border: "1px solid #E8E4DC",
+        border: "1px solid #d9d1c5",
         borderRadius: "4px",
         boxShadow: "0 8px 32px rgba(107,63,42,0.12)",
         overflow: "hidden",
@@ -700,7 +707,7 @@ function PaymentTimerWidget({
         left: 0,
         right: 0,
         zIndex: 99999, // Above Razorpay popup
-        backgroundColor: "#C9A84C", // Brand gold
+        backgroundColor: "#967249", // Brand gold
         color: "white",
         height: "48px",
         display: "flex",
@@ -776,7 +783,7 @@ function VerifyingPaymentOverlay({ isActive }: { isActive: boolean }) {
     >
       <div
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "#faf8f3",
           borderRadius: "12px",
           padding: "32px",
           textAlign: "center",
@@ -793,7 +800,7 @@ function VerifyingPaymentOverlay({ isActive }: { isActive: boolean }) {
             margin: "0 auto 20px",
             borderRadius: "50%",
             border: "4px solid #f0f0f0",
-            borderTopColor: "#C9A84C",
+            borderTopColor: "#967249",
             animation: "spin 1s linear infinite",
           }}
         />
@@ -831,6 +838,7 @@ function VerifyingPaymentOverlay({ isActive }: { isActive: boolean }) {
 
 // ─── Main Component
 function ReservationPageContent() {
+  const beginRequest = useRequestLoader();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isBookingEnabled } = useBooking();
@@ -838,23 +846,10 @@ function ReservationPageContent() {
   // Redirect if bookings are disabled
   useEffect(() => {
     if (!isBookingEnabled) {
-      setTimeout(() => router.push('/'), 3000);
+      const timer = setTimeout(() => router.push('/'), 3000);
+      return () => clearTimeout(timer);
     }
   }, [isBookingEnabled, router]);
-
-  // Show placeholder if bookings disabled
-  if (!isBookingEnabled) {
-    return (
-      <div
-        style={{ backgroundColor: BG_LIGHT }}
-        className="min-h-screen flex items-center justify-center"
-      >
-        <div className="text-center space-y-4">
-          <p className="text-gray-600">Bookings are currently disabled. Redirecting to home...</p>
-        </div>
-      </div>
-    );
-  }
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -862,14 +857,24 @@ function ReservationPageContent() {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   // Step 1
-  const { today: defaultToday, tomorrow: defaultTomorrow } = getTodayAndTomorrow();
-  const [checkIn, setCheckIn] = useState(searchParams.get("checkIn") || defaultToday);
-  const [checkOut, setCheckOut] = useState(searchParams.get("checkOut") || defaultTomorrow);
+  const { today: defaultToday } = getTodayAndTomorrow();
+  const validDate = (value: string | null): value is string => {
+    if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const date = new Date(value + "T00:00:00Z");
+    return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  };
+  const requestedCheckIn = searchParams.get("checkIn");
+  const requestedCheckOut = searchParams.get("checkOut");
+  const initialCheckIn = validDate(requestedCheckIn) && requestedCheckIn >= defaultToday ? requestedCheckIn : defaultToday;
+  const nextDay = new Date(initialCheckIn + "T12:00:00Z");
+  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+  const [checkIn, setCheckIn] = useState(initialCheckIn);
+  const [checkOut, setCheckOut] = useState(validDate(requestedCheckOut) && requestedCheckOut > initialCheckIn ? requestedCheckOut : nextDay.toISOString().slice(0, 10));
   const [roomType, setRoomType] = useState<"premium" | "premium_plus">(
-    (searchParams.get("roomType") as "premium" | "premium_plus") || "premium",
+    searchParams.get("roomType") === "premium_plus" ? "premium_plus" : "premium",
   );
   const [roomCount, setRoomCount] = useState(
-    Number(searchParams.get("roomCount")) || 1,
+    Math.min(6, Math.max(1, Math.trunc(Number(searchParams.get("roomCount"))) || 1)),
   );
 
   // Step 2
@@ -963,10 +968,12 @@ function ReservationPageContent() {
       return;
     }
 
+    const finishRequest = beginRequest();
     setCouponValidating(true);
     setCouponMessage("");
     try {
       const res = await fetch("/api/coupons/validate", {
+        signal: AbortSignal.timeout(15000),
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -997,6 +1004,7 @@ function ReservationPageContent() {
       setCouponMessage("Failed to validate coupon");
       setCouponMessageType("error");
     } finally {
+      finishRequest();
       setCouponValidating(false);
     }
   };
@@ -1136,7 +1144,6 @@ function ReservationPageContent() {
       },
     };
 
-    // @ts-ignore
     const rzp = new (window as any).Razorpay(options);
     razorpayInstanceRef.current = rzp;
     rzp.open();
@@ -1171,6 +1178,7 @@ function ReservationPageContent() {
     }
     setError(null);
     setLoading(true);
+    const finishRequest = beginRequest();
     try {
       const res = await roomsApi.searchRooms(
         checkIn,
@@ -1183,11 +1191,13 @@ function ReservationPageContent() {
         setError(result.message || "No rooms available.");
         return;
       }
+      handleRemoveCoupon();
       setSearchResult(result);
       setStep(2);
     } catch (err: any) {
       setError(err?.response?.data?.message || "Failed to search rooms.");
     } finally {
+      finishRequest();
       setLoading(false);
     }
   };
@@ -1291,13 +1301,28 @@ function ReservationPageContent() {
   };
 
   const today = new Date().toISOString().split("T")[0];
+  // Show placeholder if bookings disabled
+  if (!isBookingEnabled) {
+    return (
+      <div
+        style={{ backgroundColor: BG_LIGHT }}
+        className="min-h-screen flex items-center justify-center"
+      >
+        <div className="text-center space-y-4">
+          <p className="text-gray-600">Bookings are currently disabled. Redirecting to home...</p>
+        </div>
+      </div>
+    );
+  }
+
   const roomSummary = getRoomSummary(searchResult?.assignedRooms);
 
   return (
     <div
       style={{ backgroundColor: BG_LIGHT }}
-      className="min-h-screen text-gray-900"
+      className={`${styles.reservation} min-h-screen text-gray-900`}
     >
+      <BookingReminder active={step >= 2 && step < 4 && paymentStatus !== "success" && paymentStatus !== "pending" && !isVerifyingPayment} />
       {/* Verifying Payment Overlay */}
       <VerifyingPaymentOverlay isActive={isVerifyingPayment && paymentStatus !== "failure"} />
 
@@ -1312,10 +1337,10 @@ function ReservationPageContent() {
         className="border-b sticky top-0 z-40 backdrop-blur-sm"
         style={{ borderColor: BORDER_LIGHT, backgroundColor: CARD_LIGHT }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-0 flex items-center justify-between">
+        <div className={`max-w-7xl mx-auto px-4 flex items-center justify-between ${styles.headerInner}`}>
           <Link
             href="/"
-            className="flex items-center gap-0 whitespace-nowrap leading-none"
+            className={styles.headerLogo}
           >
             <Image
               src="/MHOMES-logo.png"
@@ -1326,11 +1351,12 @@ function ReservationPageContent() {
               className="block h-22 w-auto"
             />
           </Link>
-          <span className="text-gray-600 text-sm">Book Your Stay</span>
+          <div className={styles.headerMessage}><span>MHOMES / MADURAI</span><p>Make room for a little escape.</p></div>
+          <a className={styles.headerHelp} href="tel:+919677943053"><span>Let us help you plan</span><strong>+91 96779 43053</strong></a>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-10 pb-32">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         {/* ─── STEP 5: PAYMENT FAILURE ──────────────────────────────────────── */}
         {paymentStatus === "failure" && paymentError && (
           <PaymentFailurePage
@@ -1359,25 +1385,14 @@ function ReservationPageContent() {
           <>
             {paymentStatus !== "failure" && (
               <>
-                <div className="text-center mb-4">
-                  <h1
-                    style={{
-                      fontFamily: "Cormorant Garamond, serif",
-                      color: BUTTON_BROWN,
-                    }}
-                    className="text-4xl font-light mb-1"
-                  >
-                    Reserve Your Stay
-                  </h1>
-                  <p className="text-gray-600 text-sm">
-                    Experience luxury at MHOMES Resort
-                  </p>
-                </div>
-
-                <div className="mt-10">
-                  <StepIndicator current={step} />
-                </div>
-
+                <div className={styles.bookingLayout} data-expanded={step > 1}>
+                  <aside className={styles.stayPreview}>
+                    <div className={styles.previewPhoto}><Image src={roomType === 'premium' ? '/premium1.png' : '/premium_plus1.png'} alt={roomType === 'premium' ? 'Premium room at MHOMES' : 'Premium Plus room at MHOMES'} fill sizes="(max-width: 799px) 100vw, 45vw" /></div>
+                    <div className={styles.previewCopy}><p className={styles.eyebrow}>YOUR MADURAI RETREAT</p><h2>{roomType === 'premium' ? 'Premium' : 'Premium Plus'}</h2><p>{roomType === 'premium' ? 'Warm interiors and a comfortable space to return to after exploring Madurai.' : 'Space to slow down, restful interiors and the added comfort of a private bathtub.'}</p><div className={styles.previewDetails}><span>Alagarkoil Road</span><span>MHOMES Resort</span></div><a href="tel:+919677943053">Need a hand? +91 96779 43053</a></div>
+                  </aside>
+                  <div className={styles.bookingWorkspace}>
+                    <div className={styles.workspaceHeading}><p className={styles.eyebrow}>RESERVE DIRECTLY WITH MHOMES</p><h1>A room. A retreat. Your stay.</h1><p>Choose your dates and your favourite room. We look forward to welcoming you to MHOMES.</p></div>
+                    <div className={styles.steps}><StepIndicator current={step} /></div>
                 <AnimatePresence mode="wait">
                   <motion.div
                 key={step}
@@ -1389,7 +1404,7 @@ function ReservationPageContent() {
                 {/* STEP 1: SEARCH */}
                 {step === 1 && (
                   <Card
-                    className="max-w-2xl mx-auto border"
+                    className={`${styles.searchPanel} border`}
                     style={{
                       backgroundColor: CARD_LIGHT,
                       borderColor: BORDER_LIGHT,
@@ -1411,24 +1426,8 @@ function ReservationPageContent() {
                           onChangeCheckOut={setCheckOut}
                         />
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <ReservationSelect
-                            label="Room Type"
-                            value={roomType}
-                            onChange={(v) =>
-                              setRoomType(v as "premium" | "premium_plus")
-                            }
-                            options={[
-                              {
-                                value: "premium",
-                              label: "Premium (₹5,500/night)",
-                              },
-                              {
-                                value: "premium_plus",
-                                label: "Premium Plus (₹6,000/night)",
-                              },
-                            ]}
-                          />
+                        <fieldset className={styles.roomChoices}><legend>Choose your room</legend>{([{value:'premium',name:'Premium',price:'5,500',image:'/premium1.png'},{value:'premium_plus',name:'Premium Plus',price:'6,000',image:'/premium_plus1.png'}] as const).map(room=><label key={room.value} className={styles.roomChoice} data-selected={roomType===room.value}><input type="radio" name="stay-room-type" value={room.value} checked={roomType===room.value} onChange={()=>setRoomType(room.value)}/><Image src={room.image} alt="" width={80} height={65}/><span><strong>{room.name}</strong><small>INR {room.price} / night</small></span></label>)}</fieldset>
+                        <div>
                           <ReservationSelect
                             label="Rooms"
                             icon={<Users className="w-3.5 h-3.5" />}
@@ -1522,18 +1521,18 @@ function ReservationPageContent() {
                           animate={{ opacity: 1, y: 0 }}
                         >
                           <Card
-                            className="border"
+                            className="border py-0"
                             style={{
                               backgroundColor: CARD_LIGHT,
                               borderColor: BORDER_LIGHT,
                             }}
                           >
                             <CardContent className="p-0">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                              <div className={styles.resultGrid}>
                                 {/* Image Only */}
                                 <div className="md:col-span-1">
                                   <div
-                                    className="relative w-full aspect-square rounded-lg overflow-hidden border"
+                                    className={`relative w-full overflow-hidden border ${styles.resultPhoto}`}
                                     style={{ borderColor: BORDER_LIGHT }}
                                   >
                                     <Image
@@ -1610,7 +1609,7 @@ function ReservationPageContent() {
                                       }{" "}
                                       Amenities
                                     </p>
-                                    <div className="grid grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-3">
                                       {ROOM_AMENITIES[
                                         type as keyof typeof ROOM_AMENITIES
                                       ].map(({ label }, idx) => (
@@ -1635,7 +1634,7 @@ function ReservationPageContent() {
 
                                   {/* Pricing & Button at Bottom */}
                                   <div
-                                    className="mt-auto pt-4 border-t space-y-4"
+                                    className="mt-4 pt-4 border-t space-y-4"
                                     style={{ borderColor: BORDER_LIGHT }}
                                   >
                                     <div className="grid grid-cols-2 gap-4">
@@ -1762,8 +1761,8 @@ function ReservationPageContent() {
                                     className={`col-span-3 h-9 px-2 text-gray-900 focus:outline-none border rounded-md ${
                                       validationErrors.phone
                                         ? "border-red-600"
-                                        : "border-[#E8E4DC]"
-                                    } focus:border-[#6B3F2A]`}
+                                        : "border-[#d9d1c5]"
+                                    } focus:border-[#30271f]`}
                                     style={{
                                       backgroundColor: "#f5f5f5",
                                       borderRadius: "4px",
@@ -1810,8 +1809,8 @@ function ReservationPageContent() {
                                     className={`col-span-7 text-gray-900 focus:outline-none focus-visible:ring-0 ${
                                       validationErrors.phone
                                         ? "border-red-600"
-                                        : "border-[#E8E4DC]"
-                                    } focus:border-[#6B3F2A]`}
+                                        : "border-[#d9d1c5]"
+                                    } focus:border-[#30271f]`}
                                   />
                                 </div>
                                 {validationErrors.phone && (
@@ -2112,6 +2111,8 @@ function ReservationPageContent() {
                 )}
               </motion.div>
             </AnimatePresence>
+                  </div>
+                </div>
               </>
             )}
           </>

@@ -6,7 +6,8 @@ import axios from "axios";
 // Use relative paths for API calls (works on same domain)
 // In development: http://localhost:3000/api/...
 // In production: https://yourdomain.com/api/...
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+// Call sites already include /api; accept either an origin or an /api base.
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 // ─── Axios Instance ──────────────────────────────────────────────────────────
 

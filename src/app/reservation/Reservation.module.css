@@ -1,0 +1,92 @@
+.reservation { color:#30271f; }
+.reservation > div:first-of-type img { max-height:90px; object-fit:contain; }
+.bookingLayout { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:56px; align-items:start; }
+.stayPreview { background:#30271f; position:sticky; top:115px; }
+.previewPhoto { position:relative; height:360px; }
+.previewPhoto img { object-fit:cover; }
+.previewCopy { padding:32px; }
+.eyebrow { font-size:9px!important; letter-spacing:.16em; margin-bottom:16px; color:#967249; }
+.previewCopy .eyebrow { color:#bdaa92; }
+.previewCopy h2 { font:42px/1.1 var(--font-heading),serif; color:#f5eee4; margin-bottom:18px; }
+.previewCopy p { color:#d9cbb9; font-size:13px; line-height:1.8; }
+.previewDetails { display:flex; justify-content:space-between; border-block:1px solid #594a3c; padding-block:18px; margin-block:24px; gap:15px; }
+.previewDetails span,.previewCopy a { color:#e3d3bd; font-size:11px; }
+.workspaceHeading h1 { font:400 clamp(40px,4vw,58px)/1.1 var(--font-heading),serif; color:#30271f; margin-bottom:16px; }
+.workspaceHeading >p:last-child { color:#71665c; font-size:14px; line-height:1.8; }
+.steps { padding:28px 0; border-bottom:1px solid #d9d1c5; margin-bottom:28px; }
+.searchPanel { border:0; background:transparent!important; box-shadow:none; }
+.searchPanel >div { padding:0!important; }
+.reservation [data-slot='card'] { border-radius:2px; box-shadow:none; }
+.reservation input,.reservation select { border-radius:2px; min-height:44px; }
+.reservation button { border-radius:2px; }
+.reservation h2 { font-family:var(--font-heading),serif; font-weight:400; }
+.searchPanel h2 { font-size:28px; }
+.searchPanel button { min-height:46px; }
+.reservation label { font-size:12px; }
+.roomChoices { display:grid; gap:12px; border:0; padding:0; }
+.roomChoices legend { font-size:12px; margin-bottom:12px; }
+.roomChoice { display:flex; gap:16px; align-items:center; padding:14px; border:1px solid #d9d1c5; background:#faf8f3; cursor:pointer; }
+.roomChoice[data-selected='true'] { border-color:#30271f; background:#e9e3d8; }
+.roomChoice input { width:16px; min-height:16px; accent-color:#30271f; }
+.roomChoice img { width:80px; height:65px; object-fit:cover; }
+.roomChoice strong { display:block; font-size:15px; font-weight:500; }
+.roomChoice small { display:block; font-size:11px; color:#71665c; margin-top:5px; }
+@media(max-width:1050px) { .bookingLayout { gap:30px; } .previewPhoto { height:300px; } }
+@media(max-width:799px) { .bookingLayout { grid-template-columns:1fr; } .stayPreview { position:static; display:grid; grid-template-columns:1fr 1fr; } .previewPhoto { height:auto; min-height:230px; } .previewCopy { padding:22px; } .previewCopy h2 { font-size:30px; } .previewDetails { display:none; } .previewCopy a { display:block; margin-top:15px; } }
+
+.bookingLayout[data-expanded="true"] { grid-template-columns:1fr; }
+.bookingLayout[data-expanded="true"] .stayPreview { display:none; }
+
+/* Booking-only compact header and availability cards. */
+.headerInner { height:72px; }
+.headerLogo { display:block; position:relative; top:6px; width:88px; height:64px; overflow:visible; flex-shrink:0; }
+.reservation .headerLogo img { position:absolute; width:208px!important; height:auto!important; max-width:none; max-height:none; left:-58px; top:-15px; clip-path:inset(13% 29% 39% 28%); }
+.resultGrid { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:28px; padding:24px; align-items:start; }
+.resultPhoto { height:380px; }
+@media(max-width:799px) { .resultGrid { grid-template-columns:1fr; padding:20px; gap:24px; } .resultPhoto { height:auto; aspect-ratio:4/3; max-height:340px; } .headerInner { height:64px; } }
+
+/* A complete reservation desk, with more legible controls and a useful masthead. */
+.headerInner { height:88px; gap:24px; }
+.headerMessage { flex:1; padding-left:24px; border-left:1px solid #d9d1c5; }
+.headerMessage >span { font-size:9px; letter-spacing:.18em; color:#897258; }
+.headerMessage p { font:27px/1.2 var(--font-heading),serif; color:#30271f; margin-top:5px; }
+.headerHelp { display:flex; flex-direction:column; gap:5px; text-align:right; color:#493b2e; }
+.headerHelp span { font-size:11px; color:#71665c; }
+.headerHelp strong { font-size:14px; font-weight:500; }
+.bookingLayout { gap:32px; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); }
+.bookingWorkspace { background:#faf8f3; border:1px solid #d9d1c5; padding:30px; min-width:0; }
+.workspaceHeading h1 { font-size:clamp(34px,3.2vw,46px); margin-bottom:12px; }
+.workspaceHeading .eyebrow { margin-bottom:12px; }
+.steps { padding:22px 0; margin-bottom:8px; }
+.searchPanel { padding-bottom:0; }
+.searchPanel h2 { margin-bottom:20px; }
+.reservation .searchPanel label,.roomChoices legend { font-size:13px; }
+.searchPanel button[class*='text-left'] { min-height:58px; padding:16px; font-size:16px; background:#fffdf9!important; }
+.searchPanel button[data-slot='button'] { min-height:54px; font-size:15px; }
+.roomChoice { padding:16px; }
+.roomChoice strong { font-size:17px; }
+.roomChoice small { font-size:12px; }
+.previewPhoto { height:400px; }
+.previewCopy { padding:28px; }
+.previewCopy p { font-size:14px; }
+.previewDetails { margin-block:20px; }
+.stayPreview { top:108px; }
+.bookingLayout[data-expanded='true'] .bookingWorkspace { padding:28px; }
+@media(max-width:799px) {
+ .headerInner { height:80px; gap:16px; }
+ .headerMessage { padding-left:16px; }
+ .headerMessage p { font-size:22px; }
+ .headerHelp { display:none; }
+ .bookingLayout { grid-template-columns:1fr; gap:24px; }
+ .bookingWorkspace,.bookingLayout[data-expanded='true'] .bookingWorkspace { padding:22px; }
+ .previewPhoto { height:auto; }
+ .previewCopy { padding:22px; }
+}
+@media(max-width:420px) {
+ .headerMessage p { font-size:20px; }
+ .headerMessage >span { font-size:8px; }
+ .bookingWorkspace,.bookingLayout[data-expanded='true'] .bookingWorkspace { padding:18px; }
+ .stayPreview { grid-template-columns:1fr; }
+ .previewPhoto { height:220px; min-height:0; }
+ .previewCopy h2 { margin-bottom:10px; }
+}

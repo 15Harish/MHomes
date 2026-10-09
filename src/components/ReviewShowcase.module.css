@@ -1,0 +1,21 @@
+.showcase { min-width:0; padding-top:0; }
+.viewport { overflow:hidden; }
+.track { display:flex; width:max-content; animation:reviewDrift linear infinite; }
+.group { display:flex; align-items:stretch; gap:24px; padding:8px 24px 8px 0; }
+.card { width:clamp(290px,30vw,410px); flex-shrink:0; height:370px; display:flex; flex-direction:column; margin:0; background:#faf8f3; border:1px solid #dfd7cc; border-radius:12px; padding:24px; }
+@keyframes reviewDrift { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+.showcase:hover .track,.showcase:focus-within .track,.showcase[data-reading="true"] .track { animation-play-state:paused; }
+.card figcaption { display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; min-height:92px; }
+.avatar { width:40px; height:40px; border-radius:50%; background:#eae1d4; display:grid; place-items:center; font:26px var(--font-heading),serif; color:#584330; }
+.card strong { font-size:13px; color:#30271f; font-weight:500; overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
+.location { font-size:11px; color:#71665c; }
+.stars { display:flex; gap:4px; color:#967249; }
+.card .stars { justify-content:center; margin-top:12px; }
+.card blockquote { margin:16px 0 0; font-size:15px; line-height:1.7; color:#594e43; white-space:normal; overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:5; overflow:hidden; flex-shrink:0; }
+@media(max-width:640px) { .group { gap:16px; padding-right:16px; } .card { width:290px; padding:22px 24px; } }
+@media(prefers-reduced-motion:reduce) { .track { animation:none; } .group:nth-child(2) { display:none; } .viewport { overflow-x:auto; } }
+
+.readReview { align-self:flex-start; margin-top:auto; padding:10px 0 2px; border:0; border-bottom:1px solid #b5a38d; color:#71604d; background:transparent; font-size:11px; cursor:pointer; }
+.readReview:focus-visible { outline:2px solid #967249; outline-offset:4px; }
+.reviewDialog { background:#faf8f3; color:#30271f; border-color:#d9d1c5; max-height:80dvh; overflow-y:auto; }
+.fullText { font-size:15px; line-height:1.8; white-space:pre-line; overflow-wrap:anywhere; }

@@ -1,0 +1,7 @@
+.intro { position:fixed; inset:0; z-index:100; background:#0c0d0b; display:grid; place-items:center; opacity:1; transition:opacity .4s ease; }
+.intro[data-leaving='true'] { opacity:0; pointer-events:none; }
+.intro video { width:100%; height:100%; object-fit:cover; }
+.skip { position:absolute; bottom:32px; right:36px; border:0; border-bottom:1px solid #665a43; padding:10px 0; color:#d2bea0; background:transparent; font:10px var(--font-label),sans-serif; letter-spacing:.12em; cursor:pointer; }
+.skip span { color:inherit; margin-left:15px; }
+.skip:focus-visible { outline:2px solid #d2bea0; outline-offset:6px; }
+@media(prefers-reduced-motion:reduce) { .intro { display:none; } }

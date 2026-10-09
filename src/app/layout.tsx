@@ -1,4 +1,5 @@
 import "./globals.css";
+import { LoaderProvider } from "@/components/Loader";
 import { ThemeProvider } from "next-themes";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -30,10 +31,10 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "MHOMES - Luxury Resorts " ,
+  title: "MHOMES - Luxury Resorts" ,
   description:
-    "Experience the ultimate luxury at MHOMES Resort. Premium accommodations, world-class dining, and unforgettable experiences await.",
-  keywords: "luxury resort, spa, premium hotel, ocean view, tropical paradise",
+    "https://www.mhomesresort.com",
+  keywords: "MHOMES Resort, resort near Alagar Temple, hotel near Alagar Kovil, Alagarkoil Road accommodation, Madurai resort",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={`min-h-screen bg-background antialiased ${dmSans.className}`}
       >
+        <LoaderProvider>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -66,6 +68,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Toaster />
           </BookingProvider>
         </ThemeProvider>
+        </LoaderProvider>
       </body>
     </html>
   );
