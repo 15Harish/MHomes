@@ -1,5 +1,7 @@
 'use client'
 
+import { googleReviewsUrl } from '@/lib/google-review-links'
+
 import { ReviewShowcase } from './ReviewShowcase'
 
 import { useState, type ReactNode } from 'react'
@@ -27,7 +29,6 @@ interface Props {
   roomAmenities: Record<string, string[]>
   reviews: Review[]
   reviewsLoading: boolean
-  liveReviewsAvailable: boolean
 }
 
 function RoomPresentation({ room, amenities, index }: { room: Room; amenities: string[]; index: number }) {
@@ -63,7 +64,7 @@ function RoomPresentation({ room, amenities, index }: { room: Room; amenities: s
   )
 }
 
-export function ResortContent({ story, rooms, roomAmenities, reviews, reviewsLoading, liveReviewsAvailable }: Props) {
+export function ResortContent({ story, rooms, roomAmenities, reviews, reviewsLoading }: Props) {
   return (
     <div className={styles.content}>
       <div className={styles.retainedStory}>{story}</div>
@@ -115,7 +116,7 @@ export function ResortContent({ story, rooms, roomAmenities, reviews, reviewsLoa
 
       <section id="reviews" className={`${styles.section} ${styles.reviews}`} aria-labelledby="reviews-heading">
         <div className={styles.container}>
-          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>GUEST REVIEWS</p><h2 id="reviews-heading">Stays worth remembering.</h2></div>{liveReviewsAvailable && <Link className={styles.textLink} href="/reviews">Read guest reviews <ArrowUpRight size={18} /></Link>}</div>
+          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>GUEST REVIEWS</p><h2 id="reviews-heading">Stays worth remembering.</h2></div><a className={styles.textLink} href={googleReviewsUrl} target="_blank" rel="noopener noreferrer">View all reviews <ArrowUpRight size={18} /></a></div>
           {reviewsLoading ? <p role="status">Loading guest reviews...</p> : reviews.length ? <ReviewShowcase reviews={reviews} /> : <p>Guest reviews will appear here.</p>}
         </div>
       </section>
@@ -131,7 +132,7 @@ export function ResortContent({ story, rooms, roomAmenities, reviews, reviewsLoa
       </section>
 
       <footer className={styles.footer}><div className={styles.container}>
-        <div className={styles.footerTop}><div className={styles.footerBrand}><a href="#home" aria-label="MHOMES home">MHOMES<span>RESORT · MADURAI</span></a><p>A warm welcome.<br />A place to come back to.</p></div><div><p className={styles.eyebrow}>EXPLORE</p><nav aria-label="Footer navigation"><a href="#story">Our story</a><a href="#accommodations">Rooms & stays</a><a href="#gallery">Resort experiences</a><a href="#alagar-temple">Alagar Temple nearby</a>{liveReviewsAvailable ? <Link href="/reviews">Guest reviews</Link> : <a href="#reviews">Guest reviews</a>}</nav></div><div><p className={styles.eyebrow}>PLAN YOUR VISIT</p><nav aria-label="Guest information"><Link href="/reservation">Reservations</Link><a href="#contact">Contact & directions</a><Link href="/terms-conditions">Terms & conditions</Link><Link href="/sitemap">Sitemap</Link></nav></div><div><p className={styles.eyebrow}>LET’S STAY IN TOUCH</p><a href="tel:+919677943053">+91 96779 43053</a><a href="mailto:contact-us@mhomes.co.in">contact-us@mhomes.co.in</a><p>62/7, Poigaikaraipatti<br />Alagarkoil Road, Madurai<br />Tamil Nadu - 625301</p></div></div>
+        <div className={styles.footerTop}><div className={styles.footerBrand}><a href="#home" aria-label="MHOMES home">MHOMES<span>RESORT · MADURAI</span></a><p>A warm welcome.<br />A place to come back to.</p></div><div><p className={styles.eyebrow}>EXPLORE</p><nav aria-label="Footer navigation"><a href="#story">Our story</a><a href="#accommodations">Rooms & stays</a><a href="#gallery">Resort experiences</a><a href="#alagar-temple">Alagar Temple nearby</a><a href={googleReviewsUrl} target="_blank" rel="noopener noreferrer">Google reviews</a></nav></div><div><p className={styles.eyebrow}>PLAN YOUR VISIT</p><nav aria-label="Guest information"><Link href="/reservation">Reservations</Link><a href="#contact">Contact & directions</a><Link href="/terms-conditions">Terms & conditions</Link><Link href="/sitemap">Sitemap</Link></nav></div><div><p className={styles.eyebrow}>LET’S STAY IN TOUCH</p><a href="tel:+919677943053">+91 96779 43053</a><a href="mailto:contact-us@mhomes.co.in">contact-us@mhomes.co.in</a><p>62/7, Poigaikaraipatti<br />Alagarkoil Road, Madurai<br />Tamil Nadu - 625301</p></div></div>
         <div className={styles.footerBottom}><p>© {new Date().getFullYear()} MHOMES Resort. All rights reserved.</p><a href="#home">Back to top ↑</a></div>
       </div></footer>
     </div>

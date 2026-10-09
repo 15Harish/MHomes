@@ -13,7 +13,7 @@ function escapeXml(value: string): string {
 export async function GET() {
   const now = new Date().toISOString();
 
-  const urls = ["/", "/reservation", "/reviews", "/terms-conditions", "/sitemap"];
+  const urls = ["/", "/reservation", "/terms-conditions", "/sitemap"];
 
   const urlEntries = urls
     .map((path) => {

@@ -1,0 +1,4 @@
+// Public viewing destination supplied by the resort. No API credentials.
+// Deliberately independent of the old business URL, which may open the write-review form.
+export const googleReviewsUrl =
+  'https://www.google.com/travel/search?q=MHOMES%20Resort%20-%20Madurai%2C%2062%2F7%2C%20Alagar%20Kovil%20Main%20Rd%2C%20Poigaikaraipatti%2C%20Kallandhiri%20I%2C%20Tamil%20Nadu%20625301&g2lb=4965990%2C72471280%2C72573224%2C72647020%2C72686036%2C72803964%2C72880339%2C72882230%2C73064764%2C121529350%2C121608706%2C121738283%2C121762713%2C121921501%2C121951222%2C122078727&hl=en-IN&gl=in&cs=1&ssta=1&ts=CAEaRwopEicyJTB4M2IwMGM3ODE1YzhjMmU0YjoweGYwZGVkNGViNmE3YTgxZDgSGhIUCgcI6g8QChgMEgcI6g8QChgNGAEyAhAA&qs=CAEyFENnc0kySVBxMDdhZHRlX3dBUkFCOAJCCQnYgXpq69Te8EIJCdiBemrr1N7w&ap=ugEHcmV2aWV3cw&ictx=111&ved=0CAAQ5JsGahcKEwiYy-DG9ayXAxUAAAAAHQAAAAAQAw';

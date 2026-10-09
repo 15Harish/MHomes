@@ -1,5 +1,4 @@
 'use client'
-import { hasLiveReviews } from '@/lib/review-access'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
@@ -457,7 +456,6 @@ export default function Home() {
   // Google reviews state
   const [topReviews, setTopReviews] = useState<Array<any>>([])
   const [reviewsLoading, setReviewsLoading] = useState(true)
-  const [liveReviewsAvailable, setLiveReviewsAvailable] = useState(false)
 
   // Hero booking form state
   const { today: defaultToday, tomorrow: defaultTomorrow } = getTodayAndTomorrow()
@@ -481,29 +479,20 @@ export default function Home() {
     router.push(reservationUrl)
   }
 
-  // Fetch Google reviews on mount
+  // Fetch only when the reviews section is approaching the viewport.
   useEffect(() => {
     const fetchGoogleReviews = async () => {
       try {
         setReviewsLoading(true)
-        const response = await fetch('/api/reviews', { signal: AbortSignal.timeout(15000) })
+        const response = await fetch('/api/reviews', { cache: 'no-store', signal: AbortSignal.timeout(15000) })
         if (!response.ok) throw new Error('Reviews unavailable')
         const data = await response.json()
-        setLiveReviewsAvailable(hasLiveReviews(data))
 
-        // Get top 5 reviews sorted by rating (highest first) and then by date
-        const top5 = (data.reviews || [])
-          .sort((a: any, b: any) => {
-            if (b.rating !== a.rating) {
-              return b.rating - a.rating
-            }
-            return new Date(b.date).getTime() - new Date(a.date).getTime()
-          })
-          .slice(0, 5)
+        // Keep Google's relevance order, rather than selectively promoting ratings.
+        const top5 = (data.reviews || []).slice(0, 5)
 
         setTopReviews(top5)
       } catch (error) {
-        setLiveReviewsAvailable(false)
         console.error('Error fetching reviews:', error)
         // Use hardcoded testimonials as fallback
         setTopReviews(testimonials)
@@ -512,7 +501,18 @@ export default function Home() {
       }
     }
 
-    fetchGoogleReviews()
+    const section = document.getElementById('reviews')
+    if (!section) return
+    let started = false
+    const observer = new IntersectionObserver(entries => {
+      if (!started && entries.some(entry => entry.isIntersecting)) {
+        started = true
+        observer.disconnect()
+        void fetchGoogleReviews()
+      }
+    }, { rootMargin: '200px' })
+    observer.observe(section)
+    return () => observer.disconnect()
   }, [])
 
 
@@ -874,7 +874,6 @@ export default function Home() {
         roomAmenities={roomAmenities}
         reviews={topReviews}
         reviewsLoading={reviewsLoading}
-        liveReviewsAvailable={liveReviewsAvailable}
         story={
       <section id="story" className="py-20 bg-gradient-to-b from-muted/30 via-background to-muted/50 relative overflow-hidden">
         {/* Decorative elements */}

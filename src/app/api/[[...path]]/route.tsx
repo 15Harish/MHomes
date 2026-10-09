@@ -1,3 +1,4 @@
+import { runReviewsRequest, reviewsIntervalMs } from "@/lib/reviews-throttle";
 import { NextRequest, NextResponse } from "next/server";
 
 // Simple route handler for basic API functionality
@@ -132,98 +133,105 @@ export async function GET(request: NextRequest) {
 
       const placeId = process.env.GOOGLE_PLACE_ID;
       const googleApiKey = process.env.GOOGLE_PLACES_API_KEY;
-      let googleHttpStatus: number | null = null;
-      let googleErrorStatus: string | undefined;
+      const businessUrl = process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL || (placeId
+        ? `https://www.google.com/maps/search/?api=1&query=MHOMES+Resort&query_place_id=${encodeURIComponent(placeId)}`
+        : "https://www.google.com/maps/search/?api=1&query=MHOMES+Resort+Madurai");
+      const fallback = {
+        reviews: fallbackReviews, averageRating: 5.0, totalReviews: fallbackReviews.length,
+        source: "fallback", businessUrl, error: "Could not fetch Google reviews at this time",
+      };
+      const payload = process.env.GOOGLE_REVIEWS_ENABLED === "false" ? null : await runReviewsRequest(async () => {
+        let googleHttpStatus: number | null = null;
+        let googleErrorStatus: string | undefined;
 
-      try {
-        if (!placeId || !googleApiKey || googleApiKey === "your_google_places_api_key") {
-          throw new Error("Google Places configuration is missing: GOOGLE_PLACE_ID or GOOGLE_PLACES_API_KEY");
-        }
+        try {
+          if (!placeId || !googleApiKey || googleApiKey === "your_google_places_api_key") {
+            throw new Error("Google Places configuration is missing: GOOGLE_PLACE_ID or GOOGLE_PLACES_API_KEY");
+          }
 
-        const googleResponse = await fetch(
-          `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
-          {
-            headers: {
-              "X-Goog-Api-Key": googleApiKey,
-              "X-Goog-FieldMask": "reviews,rating,userRatingCount",
+          const googleResponse = await fetch(
+            `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
+            {
+              cache: "no-store",
+              headers: {
+                "X-Goog-Api-Key": googleApiKey,
+                "X-Goog-FieldMask": "reviews,rating,userRatingCount",
+              },
+              signal: AbortSignal.timeout(10000),
             },
-            signal: AbortSignal.timeout(10000),
-          },
-        );
-        googleHttpStatus = googleResponse.status;
-        const googleData = await googleResponse.json().catch(() => null);
+          );
+          googleHttpStatus = googleResponse.status;
+          const googleData = await googleResponse.json().catch(() => null);
 
-        if (!googleResponse.ok || googleData?.error) {
-          googleErrorStatus = googleData?.error?.status;
-          throw new Error(googleData?.error?.message || googleResponse.statusText || "Google Places request failed");
-        }
-        if (!googleData || typeof googleData !== "object") {
-          throw new Error("Google Places returned an invalid JSON response");
-        }
+          if (!googleResponse.ok || googleData?.error) {
+            googleErrorStatus = googleData?.error?.status;
+            throw new Error(googleData?.error?.message || googleResponse.statusText || "Google Places request failed");
+          }
+          if (!googleData || typeof googleData !== "object") {
+            throw new Error("Google Places returned an invalid JSON response");
+          }
 
-        type GoogleReview = {
-          name?: string;
-          authorAttribution?: { displayName?: string; photoUri?: string };
-          rating?: number;
-          text?: { text?: string };
-          originalText?: { text?: string };
-          publishTime?: string;
-          relativePublishTimeDescription?: string;
-        };
-        const reviews: GoogleReview[] = googleData.reviews ?? [];
-        const averageRating = googleData.rating ?? 0;
-        const totalReviews = googleData.userRatingCount ?? 0;
-
-        const formattedReviews = reviews.map((review, index) => {
-          const published = review.publishTime ? new Date(review.publishTime) : null;
-          return {
-            id: review.name || review.publishTime || `google-${index}`,
-            name: review.authorAttribution?.displayName || "Anonymous",
-            location: review.authorAttribution?.photoUri ? "Verified Guest" : "Guest",
-            rating: review.rating ?? 0,
-            text: review.text?.text ?? review.originalText?.text ?? "",
-            date: published && Number.isFinite(published.getTime())
-              ? published.toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
-              : review.relativePublishTimeDescription || "",
-            source: "google",
-            verified: true,
-            profilePhotoUrl: review.authorAttribution?.photoUri,
+          type GoogleReview = {
+            name?: string;
+            googleMapsUri?: string;
+            authorAttribution?: { displayName?: string; photoUri?: string; uri?: string };
+            rating?: number;
+            text?: { text?: string };
+            originalText?: { text?: string };
+            publishTime?: string;
+            relativePublishTimeDescription?: string;
           };
-        });
+          const reviews: GoogleReview[] = googleData.reviews ?? [];
+          const averageRating = googleData.rating ?? 0;
+          const totalReviews = googleData.userRatingCount ?? 0;
 
-        return NextResponse.json({
-          reviews: formattedReviews,
-          averageRating,
-          totalReviews,
-          source: "google",
-          businessUrl:
-            process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL ||
-            "https://www.google.com/maps",
-        });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown Google Places request failure";
-        // Log diagnostic details only, never the request headers or API key.
-        console.error("Google Places reviews request failed:", {
-          httpStatus: googleHttpStatus,
-          status: googleErrorStatus,
-          message: googleApiKey ? message.split(googleApiKey).join("[REDACTED]") : message,
-        });
+          const formattedReviews = reviews.map((review, index) => {
+            const published = review.publishTime ? new Date(review.publishTime) : null;
+            return {
+              id: review.name || review.publishTime || `google-${index}`,
+              name: review.authorAttribution?.displayName || "Anonymous",
+              location: "Google Maps",
+              rating: review.rating ?? 0,
+              text: review.text?.text ?? review.originalText?.text ?? "",
+              date: published && Number.isFinite(published.getTime())
+                ? published.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                : review.relativePublishTimeDescription || "",
+              source: "google",
+              verified: false,
+              authorUrl: review.authorAttribution?.uri,
+              reviewUrl: review.googleMapsUri,
+              profilePhotoUrl: review.authorAttribution?.photoUri,
+            };
+          });
 
-        return NextResponse.json({
-          reviews: fallbackReviews,
-          averageRating: 5.0,
-          totalReviews: fallbackReviews.length,
-          source: "fallback",
-          businessUrl:
-            process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL ||
-            "https://www.google.com/maps",
-          error: "Could not fetch Google reviews at this time",
-        });
-      }
+          return {
+            reviews: formattedReviews,
+            averageRating,
+            totalReviews,
+            source: "google",
+            businessUrl,
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Unknown Google Places request failure";
+          // Log diagnostic details only, never the request headers or API key.
+          console.error("Google Places reviews request failed:", {
+            httpStatus: googleHttpStatus,
+            status: googleErrorStatus,
+            message: googleApiKey ? message.split(googleApiKey).join("[REDACTED]") : message,
+          });
+
+          return fallback;
+        }
+      }, reviewsIntervalMs(process.env.GOOGLE_REVIEWS_MIN_INTERVAL_SECONDS));
+      return NextResponse.json(payload ?? fallback, { headers: {
+        "Cache-Control": "private, no-store, max-age=0",
+        "CDN-Cache-Control": "no-store",
+        "Vercel-CDN-Cache-Control": "no-store",
+      } });
     }
 
     // Booking placeholder endpoint
