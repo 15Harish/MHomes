@@ -1,4 +1,5 @@
 'use client'
+import { guestReviews } from '@/lib/guest-reviews'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
@@ -453,10 +454,6 @@ export default function Home() {
   const handleHeroReady = useCallback(() => setHeroReady(true), [])
   const handleHeroControlsReady = useCallback(() => setHeroControlsReady(true), [])
 
-  // Google reviews state
-  const [topReviews, setTopReviews] = useState<Array<any>>([])
-  const [reviewsLoading, setReviewsLoading] = useState(true)
-
   // Hero booking form state
   const { today: defaultToday, tomorrow: defaultTomorrow } = getTodayAndTomorrow()
   const [checkIn, setCheckIn] = useState<string | null>(defaultToday)
@@ -478,44 +475,6 @@ export default function Home() {
     const reservationUrl = `/reservation?${params.toString()}`
     router.push(reservationUrl)
   }
-
-  // Fetch only when the reviews section is approaching the viewport.
-  useEffect(() => {
-    const fetchGoogleReviews = async () => {
-      try {
-        setReviewsLoading(true)
-        const response = await fetch('/api/reviews', { cache: 'no-store', signal: AbortSignal.timeout(15000) })
-        if (!response.ok) throw new Error('Reviews unavailable')
-        const data = await response.json()
-
-        // Keep Google's relevance order, rather than selectively promoting ratings.
-        const top5 = (data.reviews || []).slice(0, 5)
-
-        setTopReviews(top5)
-      } catch (error) {
-        console.error('Error fetching reviews:', error)
-        // Use hardcoded testimonials as fallback
-        setTopReviews(testimonials)
-      } finally {
-        setReviewsLoading(false)
-      }
-    }
-
-    const section = document.getElementById('reviews')
-    if (!section) return
-    let started = false
-    const observer = new IntersectionObserver(entries => {
-      if (!started && entries.some(entry => entry.isIntersecting)) {
-        started = true
-        observer.disconnect()
-        void fetchGoogleReviews()
-      }
-    }, { rootMargin: '200px' })
-    observer.observe(section)
-    return () => observer.disconnect()
-  }, [])
-
-
 
   const [activeSection, setActiveSection] = useState('home')
   const [shouldAnimateHome, setShouldAnimateHome] = useState(false)
@@ -572,45 +531,6 @@ export default function Home() {
     'Premium Room': ['42-Inch Smart TV', 'In-Room Refreshment Kit', 'Air Conditioning', 'Work Desk', 'High-Speed WiFi', 'Premium Toiletries','Rainfall Shower', 'Daily Housekeeping'],
     'Premium Plus Room': ['42-Inch Smart TV','In-Room Refreshment Kit','Air Conditioning','Work Desk','High-Speed WiFi', 'Premium Toiletries','Rainfall Shower','Daily Housekeeping','Premium Bedding','BathTub']
   }
-
-  const testimonials = [
-  {
-    name: 'Arjun Mehta',
-    location: 'Mumbai, India',
-    rating: 5,
-    text: 'Stayed in the Premium Plus Room for our anniversary and it exceeded every expectation. The room was spotless, staff were incredibly warm, and the whole experience felt very personal. Highly recommend MHOMES to anyone looking for a peaceful luxury getaway.',
-    image: '/api/placeholder/60/60'
-  },
-  {
-    name: 'Priya Subramaniam',
-    location: 'Chennai, India',
-    rating: 5,
-    text: 'We booked two Premium Rooms for a family trip and the entire process from online booking to check-out was seamless. The rooms were spacious, well-maintained, and the team made sure every need was taken care of. Will definitely be coming back!',
-    image: '/api/placeholder/60/60'
-  },
-  {
-    name: 'Karthik Rajan',
-    location: 'Coimbatore, India',
-    rating: 5,
-    text: 'MHOMES Resort is a hidden gem. The ambience is serene, the rooms are beautifully maintained, and the staff go out of their way to make you feel at home. Checked in for a weekend trip and honestly did not want to leave.',
-    image: '/api/placeholder/60/60'
-  },
-  {
-    name: 'Sneha & Vikram Nair',
-    location: 'Bangalore, India',
-    rating: 5,
-    text: 'Chose MHOMES for our honeymoon and it was the best decision we made. The Premium Plus Room was stunning, the privacy was great, and the staff were so thoughtful — they even surprised us with a small decoration in the room. Perfect in every way.',
-    image: '/api/placeholder/60/60'
-  },
-  {
-    name: 'Deepa Krishnamurthy',
-    location: 'Madurai, India',
-    rating: 5,
-    text: 'Attended a small family gathering here and the experience was wonderful. Booking multiple rooms was easy, the property is well-kept, and the overall vibe is calm and luxurious. Great value for the quality you get. Strongly recommend MHOMES Resort.',
-    image: '/api/placeholder/60/60'
-  }
-];
-
 
   const storyData = [
     {
@@ -872,8 +792,8 @@ export default function Home() {
       <ResortContent
         rooms={accommodationTypes}
         roomAmenities={roomAmenities}
-        reviews={topReviews}
-        reviewsLoading={reviewsLoading}
+        reviews={guestReviews}
+        reviewsLoading={false}
         story={
       <section id="story" className="py-20 bg-gradient-to-b from-muted/30 via-background to-muted/50 relative overflow-hidden">
         {/* Decorative elements */}
