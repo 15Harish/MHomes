@@ -21,28 +21,46 @@ A sophisticated, modern luxury resort booking website featuring a responsive des
 ## 🛠️ Tech Stack
 
 ### Frontend Framework
-- **Next.js 15.5.2** - React meta-framework with server/client components, built-in optimization
+- **Next.js 16** (App Router) - React framework with server/client components, API routes and middleware
 - **React 19.1.0** - UI library with hooks and latest features
-- **TypeScript** - Type-safe development with improved IDE support
+- **TypeScript 5** - Type-safe development with improved IDE support
 
 ### Styling & Animation
-- **Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
-- **Framer Motion 12.23.12** - Production-ready animation library for React
-- **PostCSS** - CSS transformation tool
+- **Tailwind CSS 4** - Utility-first CSS framework (via `@tailwindcss/postcss`)
+- **CSS Modules** - Scoped styles for the loader, logo intro, hotel opening and review showcase
+- **Framer Motion 12** - Production-ready animation library for React
+- **tailwindcss-animate / tw-animate-css** - Animation utilities
 
 ### UI Components
 - **Radix UI** - Accessible, unstyled component primitives
-- **shadcn/ui** - High-quality React components built on Radix UI and Tailwind
-- **Lucide Icons** - Beautiful, consistent SVG icon library
+- **shadcn/ui** - Components built on Radix UI and Tailwind
+- **Lucide Icons** - Consistent SVG icon library
+- **Embla Carousel** - Gallery and image carousels
+- **Sonner** - Toast notifications
+- **Recharts** - Charts for the admin views
+- **React Day Picker + date-fns** - Date selection and date handling
 
-### Build & Development
-- **Turbopack** - Next.js bundler (faster than Webpack)
-- **ESLint** - Code quality and consistency
-- **TypeScript Compiler** - Static type checking
+### Forms & Validation
+- **React Hook Form** - Form state management
+- **Zod 4** - Schema validation (with `@hookform/resolvers`)
+- **Google reCAPTCHA** - Bot protection on forms (`react-google-recaptcha`)
 
-### Data & Storage
-- **localStorage** - Client-side persistent storage for reservations and reviews
-- **JSON** - Data serialization format
+### Backend & Data
+- **Next.js API Routes** - Server-side booking, review and payment endpoints
+- **Prisma 5** - Type-safe ORM, schema and migrations in `prisma/`
+- **PostgreSQL** - Primary database for rooms, bookings, guests and reviews
+- **LRU Cache** - In-memory caching and API rate limiting
+- **Axios** - HTTP client
+
+### Payments & Email
+- **Razorpay** - Online payment gateway for bookings
+- **Resend** - Transactional emails (booking confirmations)
+- **EmailJS** - Client-side email sending
+
+### Build, Quality & Deployment
+- **Turbopack** - Next.js dev bundler
+- **ESLint 9** - Code quality and consistency (`eslint-config-next`)
+- **Vercel** - Hosting and deployment
 
 ---
 
@@ -553,10 +571,12 @@ This project is created for the MHOMES Resort brand and is proprietary.
 **Created**: November 2025
 
 **Tech Stack Version**: 
-- Next.js 15.5.2
+- Next.js 16
 - React 19.1.0
+- TypeScript 5
 - Tailwind CSS 4
-- Framer Motion 12.23.12
+- Framer Motion 12
+- Prisma 5 + PostgreSQL
 
 ---
 
